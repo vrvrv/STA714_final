@@ -6,16 +6,30 @@ from scipy.stats import bernoulli
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
+from scipy.stats import boxcox
+
+pt = preprocessing.PowerTransformer(copy=True)
+
 def read_and_make_missing():
 	data = pd.read_csv('./data/boston.csv')
-	data.columns = [s.upper() for s in data.columns]
 
-	# train, test split
-	train, test = train_test_split(data, test_size=0.30)
+	# 변환 (정규성) - Boxcox transformation
+	data['LSTAT'], _ = boxcox(data['LSTAT'])
+
+	# 변환 (정규성) - Yeo-Johnson transformation
+	data['CRIM'] = np.log(data['CRIM']/(100-data['CRIM']))
+	pt.fit(np.array(data['CRIM']).reshape(-1,1))
+	data['CRIM']=pt.transform(np.array(data['CRIM']).reshape(-1,1))
+
+	data['PTRATIO'] = np.log(data['PTRATIO']/(100-data['PTRATIO']))
+	pt.fit(np.array(data['PTRATIO']).reshape(-1,1))
+	data['PTRATIO']=pt.transform(np.array(data['PTRATIO']).reshape(-1,1))
+
+	data.to_csv('./data/boston_transform.csv', index_label = 'original_idx')
+
 
 	# 결측 변수 및 결측 비율 선정
 	miss_cov = ['RM', 'LSTAT', 'RAD', 'CRIM', 'PTRATIO']
-	miss_rat = [0.5 , 0.45, 0.4, 0.35, 0.3 ]
 
 	# 결측 생성 
 
@@ -107,7 +121,7 @@ def read_and_make_missing():
                      na_position='first',
                      inplace=True)
 
-	data.to_csv('./data/data_nan.csv', index_label = 'original_idx')
+	data.to_csv('./data/boston_nan.csv', index_label = 'original_idx')
 
 if __name__ == '__main__':
 	read_and_make_missing()
