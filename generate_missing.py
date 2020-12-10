@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from scipy.stats import bernoulli
+
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
@@ -16,7 +18,6 @@ def read_and_make_missing():
 	miss_rat = [0.5 , 0.45, 0.4, 0.35, 0.3 ]
 
 	# 결측 생성 
-	from scipy.stats import bernoulli
 
 	scaler = preprocessing.StandardScaler()
 
@@ -52,7 +53,7 @@ def read_and_make_missing():
 	selected_cov = ['TAX', 'AGE', 'ZN', 'DIS', 'PTRATIO']
 	z = scaler.fit_transform(data_[selected_cov])
 	z = pd.DataFrame(z, columns = selected_cov)
-	z = -0.5*z['TAX']-0.6*z['AGE']-0.6*z['ZN']-0.5*z['DIS']-1.2*z['PTRATIO']
+	z = -0.5*z['TAX']-0.6*z['AGE']-0.6*z['ZN']-0.5*z['DIS']-1.2*z['PTRATIO']+1.5
 
 	# 결측 발생 확률
 	z = (1/(1+np.exp(-z)))
@@ -65,7 +66,7 @@ def read_and_make_missing():
 	selected_cov = ['PTRATIO', 'NOX', 'TAX', 'AGE']
 	z = scaler.fit_transform(data_[selected_cov])
 	z = pd.DataFrame(z, columns = selected_cov)
-	z = -0.5*z['PTRATIO']-0.6*z['NOX']-0.6*z['TAX']-0.5*z['AGE']
+	z = -0.5*z['PTRATIO']-0.6*z['NOX']-0.6*z['TAX']-0.5*z['AGE']+1.1
 
 	# 결측 발생 확률
 	z = (1/(1+np.exp(-z)))
@@ -78,7 +79,7 @@ def read_and_make_missing():
 	selected_cov = ['DIS', 'ZN', 'CHAS', 'TAX']
 	z = scaler.fit_transform(data_[selected_cov])
 	z = pd.DataFrame(z, columns = selected_cov)
-	z = -0.5*z['DIS']-0.6*z['ZN']-0.6*z['CHAS']-0.5*z['TAX']
+	z = -0.5*z['DIS']-0.6*z['ZN']-0.6*z['CHAS']-0.5*z['TAX']+0.8
 
 	# 결측 발생 확률
 	z = (1/(1+np.exp(-z)))
