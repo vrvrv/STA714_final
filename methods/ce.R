@@ -7,4 +7,4 @@ data$RAD <- as.factor(data$RAD)
 res <- mice(data, m=1,
             method = c('pmm', 'pmm', 'polyreg', 'pmm', 'pmm', "", "", "", "", "", "", "", "", ""),
             visitSequence = "monotone")
-res$imp$RAD
+data$RM <- res$imp$RM
