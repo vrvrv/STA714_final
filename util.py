@@ -21,24 +21,29 @@ def result(data_missing, data_tr, imp, prefix = ''):
     ptidx = np.where(data_missing['PTRATIO'].isnull()==True)[0]
 
     for i in rmidx:
-        rm_true.append(data_tr.loc[i,'RM'])
-        rm_imp.append(imp.loc[i, prefix+'RM'])
+        if i!= 0:
+            rm_true.append(data_tr.loc[i,'RM'])
+            rm_imp.append(imp.loc[i, prefix+'RM'])
 
     for i in lsidx:
-        lstat_true.append(data_tr.loc[i,'LSTAT'])
-        lstat_imp.append(imp.loc[i,prefix+'LSTAT'])
+        if i!= 0:
+            lstat_true.append(data_tr.loc[i,'LSTAT'])
+            lstat_imp.append(imp.loc[i,prefix+'LSTAT'])
 
     for i in raidx:
-        rad_true.append(data_tr.loc[i,'RAD'])
-        rad_imp.append(imp.loc[i,prefix+'RAD'])
+        if i!= 0:
+            rad_true.append(data_tr.loc[i,'RAD'])
+            rad_imp.append(imp.loc[i,prefix+'RAD'])
 
     for i in cridx:
-        crim_true.append(data_tr.loc[i,'CRIM'])
-        crim_imp.append(imp.loc[i,prefix+'CRIM'])
+        if i!= 0:
+            crim_true.append(data_tr.loc[i,'CRIM'])
+            crim_imp.append(imp.loc[i,prefix+'CRIM'])
 
     for i in ptidx:
-        ptr_true.append(data_tr.loc[i,'PTRATIO'])
-        ptr_imp.append(imp.loc[i,prefix+'PTRATIO'])
+        if i!= 0:
+            ptr_true.append(data_tr.loc[i,'PTRATIO'])
+            ptr_imp.append(imp.loc[i,prefix+'PTRATIO'])
 
     plt.figure(figsize = (30,4))
     plt.subplot(1, 5, 1)

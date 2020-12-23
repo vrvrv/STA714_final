@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+import copy
+
 from scipy.stats import bernoulli
 
 from sklearn import preprocessing
@@ -8,9 +10,9 @@ from sklearn.model_selection import train_test_split
 
 from scipy.stats import boxcox
 
-pt = preprocessing.PowerTransformer(copy=True)
 
-def read_and_make_missing():
+def read_and_transform(path):
+	pt = preprocessing.PowerTransformer(copy=True)
 	data = pd.read_csv('./data/boston.csv')
 
 	# 변환 (정규성) - Boxcox transformation
@@ -24,9 +26,12 @@ def read_and_make_missing():
 	data['PTRATIO'] = np.log(data['PTRATIO']/(100-data['PTRATIO']))
 	pt.fit(np.array(data['PTRATIO']).reshape(-1,1))
 	data['PTRATIO']=pt.transform(np.array(data['PTRATIO']).reshape(-1,1))
+	data.to_csv(path + '/boston_transform.csv', index_label = 'original_idx')
 
-	data.to_csv('./data/boston_transform.csv', index_label = 'original_idx')
+	return data
 
+def ampute(data, i, path):
+	data = data.copy()
 
 	# 결측 변수 및 결측 비율 선정
 	miss_cov = ['RM', 'LSTAT', 'RAD', 'CRIM', 'PTRATIO']
@@ -45,7 +50,6 @@ def read_and_make_missing():
 	z = pd.DataFrame(z, columns = selected_cov)
 	z = -z['ZN']+1.2*z['NOX']+0.3*z['CHAS']+0.1*z['B']-0.6*z['LSTAT']
 	z = 1/(1+np.exp(-z))
-
 	# missing_indicator
 	m_rm = bernoulli(z).rvs()
 
@@ -101,7 +105,7 @@ def read_and_make_missing():
 	# missing indicator
 	m_ptratio = bernoulli(z).rvs()
 
-	m_rm_ = [i for i, m in enumerate(m_rm) if m==1]
+	m_rm_ = [i for i, m in zip(data.index, m_rm) if m==1]
 	m_lstat_ = [i for i, m in zip(m_rm_, m_lstat) if m==1]
 	m_rad_ = [i for i, m in zip(m_lstat_, m_rad) if m==1]
 	m_crim_ = [i for i, m in zip(m_rad_, m_crim) if m==1]
@@ -121,7 +125,13 @@ def read_and_make_missing():
                      na_position='first',
                      inplace=True)
 
-	data.to_csv('./data/boston_nan.csv', index_label = 'original_idx')
+	data.to_csv(path + '/nan/boston_nan_'+str(i)+'.csv', index_label = 'original_idx')
 
 if __name__ == '__main__':
-	read_and_make_missing()
+	path = './data'
+	data = read_and_transform()
+	for i in range(1, 1+100):
+		ampute(data, i, path)
+
+
+
